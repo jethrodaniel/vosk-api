@@ -123,9 +123,10 @@ EOF
   EXT=dyld KALDI_ROOT=../../kaldi make -j ${nproc}
   cp libvosk.dyld ../..
 
-  say 'Building vosk-api python module'
-  cd ../python
-  python3 setup.py install
+  # TODO: skip python for now
+  # say 'Building vosk-api python module'
+  # cd ../python
+  # python3 setup.py install
 
 ) >build.log 2>&1
 if [ $? -ne 0 ]; then
