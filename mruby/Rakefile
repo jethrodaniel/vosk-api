@@ -1,0 +1,38 @@
+# frozen_string_literal: true
+
+require "net/http"
+
+desc "build and test mruby gem"
+task :mruby do
+  unless File.directory?("3rd_party/mruby")
+    sh "git clone --depth 1 -b 3.2.0 https://github.com/mruby/mruby " \
+       "3rd_party/mruby"
+  end
+
+  Dir.chdir "3rd_party/mruby" do
+    # sh "rake clean"
+    sh "rake all test MRUBY_CONFIG=../../build_config.rb"
+  end
+
+  sh "./3rd_party/mruby/build/host/bin/mruby sample/transcribe.rb"
+end
+
+task :clean do
+  Dir.chdir "3rd_party/mruby" do
+    sh "rake clean"
+  end
+end
+
+MODEL = "vosk-model-small-en-us-0.15"
+file MODEL do
+  puts "Downloading #{MODEL}..."
+  sh "wget https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
+  sh "mv #{MODEL}.zip model.zip"
+  sh "unzip model.zip"
+  sh "rm model.zip"
+  puts "Done"
+end
+
+task model: MODEL
+
+task default: %i[mruby]
